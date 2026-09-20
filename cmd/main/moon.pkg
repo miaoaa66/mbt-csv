@@ -1,0 +1,8 @@
+import {
+  "ljh/mbt-csv" @csv,
+  "moonbitlang/core/env",
+  "moonbitlang/core/string" @str,
+  "moonbitlang/x/fs",
+}
+
+pkgtype(kind: "executable")
