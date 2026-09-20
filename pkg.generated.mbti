@@ -1,0 +1,81 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "miaoaa66/mbt-csv"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn document_to_string(Array[Array[String]], config? : CsvConfig) -> String
+
+pub fn escape_field(String, CsvConfig) -> String
+
+pub fn needs_quoting(String, CsvConfig) -> Bool
+
+pub fn parse(String) -> Result[Array[Array[String]], CsvError]
+
+pub fn parse_table(String, config? : CsvConfig) -> Result[Table, CsvError]
+
+pub fn parse_table_lenient(String, config? : CsvConfig) -> Result[LenientResult, CsvError]
+
+pub fn parse_tsv(String) -> Result[Array[Array[String]], CsvError]
+
+pub fn parse_with_config(String, CsvConfig) -> Result[Array[Array[String]], CsvError]
+
+pub fn row_to_string(Array[String], config? : CsvConfig) -> String
+
+// Errors
+
+// Types and methods
+pub struct CsvConfig {
+  delimiter : Char
+  quote : Char
+  skip_empty_lines : Bool
+} derive(Eq, @debug.Debug)
+pub fn CsvConfig::default() -> Self
+pub fn CsvConfig::with_delimiter(Char) -> Self
+
+pub enum CsvError {
+  UnterminatedQuote(Int, Int)
+  EmptyDocument
+  ColumnCountMismatch(Int, Int, Int)
+} derive(Eq, @debug.Debug)
+pub fn CsvError::message(Self) -> String
+
+pub struct LenientIssue {
+  row : Int
+  reason : String
+} derive(@debug.Debug)
+
+pub struct LenientResult {
+  table : Table
+  issues : Array[LenientIssue]
+} derive(@debug.Debug)
+
+pub struct Record {
+  headers : Array[String]
+  cells : Array[String]
+} derive(@debug.Debug)
+pub fn Record::get(Self, String) -> String?
+pub fn Record::get_double(Self, String) -> Result[Double, String]
+pub fn Record::get_int(Self, String) -> Result[Int, String]
+pub fn Record::get_str(Self, String) -> Result[String, String]
+
+pub struct Table {
+  headers : Array[String]
+  rows : Array[Array[String]]
+} derive(@debug.Debug)
+pub fn Table::column_index(Self, String) -> Int?
+pub fn Table::filter(Self, (Record) -> Bool) -> Self
+pub fn Table::from_document(Array[Array[String]]) -> Result[Self, CsvError]
+pub fn Table::get(Self, Int, String) -> String?
+pub fn Table::n_cols(Self) -> Int
+pub fn Table::n_rows(Self) -> Int
+pub fn Table::records(Self) -> Array[Record]
+pub fn Table::select(Self, Array[String]) -> Result[Self, String]
+pub fn Table::to_csv_string(Self, config? : CsvConfig) -> String
+pub fn Table::to_document(Self) -> Array[Array[String]]
+
+// Type aliases
+
+// Traits

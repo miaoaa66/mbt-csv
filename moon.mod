@@ -1,13 +1,13 @@
 // Learn more about moon.mod configuration:
 // https://docs.moonbitlang.com/en/latest/toolchain/moon/module.html
 
-name = "ljh/mbt-csv"
+name = "miaoaa66/mbt-csv"
 
 version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/miaoaa66/mbt-csv"
 
 license = "MIT"
 

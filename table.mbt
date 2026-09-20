@@ -119,11 +119,12 @@ pub fn Record::get_str(self : Record, name : String) -> Result[String, String] {
 pub fn Record::get_int(self : Record, name : String) -> Result[Int, String] {
   match self.get(name) {
     Some(v) => {
-      let parsed = try? @string.parse_int(v)
-      match parsed {
-        Ok(n) => Ok(n)
-        Err(_) => Err("column '\{name}' is not an integer: '\{v}'")
+      let parsed = try {
+        Ok(@string.parse_int(v))
+      } catch {
+        _ => Err("column '\{name}' is not an integer: '\{v}'")
       }
+      parsed
     }
     None => Err("missing column '\{name}'")
   }
@@ -137,11 +138,12 @@ pub fn Record::get_double(
 ) -> Result[Double, String] {
   match self.get(name) {
     Some(v) => {
-      let parsed = try? @string.parse_double(v)
-      match parsed {
-        Ok(d) => Ok(d)
-        Err(_) => Err("column '\{name}' is not a number: '\{v}'")
+      let parsed = try {
+        Ok(@string.parse_double(v))
+      } catch {
+        _ => Err("column '\{name}' is not a number: '\{v}'")
       }
+      parsed
     }
     None => Err("missing column '\{name}'")
   }

@@ -74,6 +74,16 @@ fn parse_int_or(s : String, fallback : Int) -> Int {
 }
 
 ///|
+/// Numeric view of a string; `None` when it is not a valid number.
+fn numeric(s : String) -> Double? {
+  try {
+    Some(@str.parse_double(s))
+  } catch {
+    _ => None
+  }
+}
+
+///|
 /// Build the filter predicate for `filter <col> <op> <value>`.
 fn make_pred(
   col : String,
@@ -88,13 +98,13 @@ fn make_pred(
           "ne" => v != value
           "contains" => str_contains(v, value)
           "gt" =>
-            match (try? @str.parse_double(v), try? @str.parse_double(value)) {
-              (Ok(a), Ok(b)) => a > b
+            match (numeric(v), numeric(value)) {
+              (Some(a), Some(b)) => a > b
               _ => v > value
             }
           "lt" =>
-            match (try? @str.parse_double(v), try? @str.parse_double(value)) {
-              (Ok(a), Ok(b)) => a < b
+            match (numeric(v), numeric(value)) {
+              (Some(a), Some(b)) => a < b
               _ => v < value
             }
           _ => {
@@ -126,11 +136,11 @@ fn print_usage() -> Unit {
 ///|
 /// Load a file as a lenient table; prints warnings/errors and returns None
 /// when the file cannot be used.
-fn load_table(path : String) -> @csv.Table? raise {
-  let content = try? @fs.read_file_to_string(path)
-  let text = match content {
-    Ok(t) => t
-    Err(_) => {
+fn load_table(path : String) -> @csv.Table? {
+  let text = try {
+    @fs.read_file_to_string(path)
+  } catch {
+    _ => {
       println("error: cannot read file '\{path}'")
       return None
     }
@@ -150,7 +160,7 @@ fn load_table(path : String) -> @csv.Table? raise {
 }
 
 ///|
-fn main raise {
+fn main {
   let args = @env.args()
   let rest : Array[String] = []
   for i in 1..<args.length() {
@@ -224,23 +234,23 @@ fn main raise {
       }
     }
     "lenient" => {
-      let content = try? @fs.read_file_to_string(path)
-      match content {
-        Err(_) => {
+      let text = try {
+        @fs.read_file_to_string(path)
+      } catch {
+        _ => {
           println("error: cannot read file '\{path}'")
           return
         }
-        Ok(text) =>
-          match @csv.parse_table_lenient(text) {
-            Ok(res) => {
-              println("parsed rows : \{res.table.n_rows()}")
-              println("skipped     : \{res.issues.length()}")
-              for issue in res.issues {
-                println("  record \{issue.row}: \{issue.reason}")
-              }
-            }
-            Err(e) => println("error: \{e.message()}")
+      }
+      match @csv.parse_table_lenient(text) {
+        Ok(res) => {
+          println("parsed rows : \{res.table.n_rows()}")
+          println("skipped     : \{res.issues.length()}")
+          for issue in res.issues {
+            println("  record \{issue.row}: \{issue.reason}")
           }
+        }
+        Err(e) => println("error: \{e.message()}")
       }
     }
     _ => println("error: unknown command '\{cmd}' (try --help)")

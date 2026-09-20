@@ -1,5 +1,5 @@
 import {
-  "ljh/mbt-csv" @csv,
+  "miaoaa66/mbt-csv" @csv,
   "moonbitlang/core/env",
   "moonbitlang/core/string" @str,
   "moonbitlang/x/fs",

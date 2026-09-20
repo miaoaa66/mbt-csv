@@ -1,4 +1,4 @@
-# ljh/mbt-csv
+# miaoaa66/mbt-csv
 
 Self-contained **CSV toolkit** for MoonBit: an RFC 4180-style parser and
 writer, a header-aware `Table` with by-name access, filtering, column
@@ -32,7 +32,7 @@ own.
 ## Installation
 
 ```
-moon add ljh/mbt-csv
+moon add miaoaa66/mbt-csv
 ```
 
 ## Quick start
