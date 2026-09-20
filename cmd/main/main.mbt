@@ -130,6 +130,8 @@ fn print_usage() -> Unit {
   println("  filter <file> <col> <op> <val>   print matching rows")
   println("                                   ops: eq | ne | gt | lt | contains")
   println("  select <file> <col1,col2,...>    print only the given columns")
+  println("  sort <file> <col> [text]         rows sorted by column (numeric by default, pass 'text' for string order)")
+  println("  stats <file> <col>               count/min/max/mean/stdev of a numeric column")
   println("  lenient <file>                   parse and report skipped damaged rows")
 }
 
@@ -230,6 +232,40 @@ fn main {
       let cols = tokens_of(rest[2])
       match table.select(cols) {
         Ok(t2) => println(t2.to_csv_string())
+        Err(msg) => println("error: \{msg}")
+      }
+    }
+    "sort" => {
+      if rest.length() < 3 {
+        println("error: usage: sort <file> <col> [text]")
+        return
+      }
+      let numeric = !(rest.length() >= 4 && rest[3] == "text")
+      match table.sort_by(rest[2], numeric=numeric) {
+        Ok(s) => {
+          println(@csv.row_to_string(s.headers))
+          for r in s.rows {
+            println(@csv.row_to_string(r))
+          }
+        }
+        Err(msg) => println("error: \{msg}")
+      }
+    }
+    "stats" => {
+      if rest.length() < 3 {
+        println("error: usage: stats <file> <col>")
+        return
+      }
+      match table.numeric_summary(rest[2]) {
+        Ok(s) => {
+          println("column  : \{s.column}")
+          println("count   : \{s.count}")
+          println("skipped : \{s.skipped}")
+          println("min     : \{s.min}")
+          println("max     : \{s.max}")
+          println("mean    : \{s.mean}")
+          println("stdev   : \{s.stdev}")
+        }
         Err(msg) => println("error: \{msg}")
       }
     }
